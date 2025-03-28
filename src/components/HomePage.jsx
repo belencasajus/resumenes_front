@@ -18,8 +18,34 @@ export default function HomePage() {
     .sort((a, b) => b.averageRating - a.averageRating)
     .slice(0, 3);
 
+  const toggleFavorite = (bookId) => {
+    // Change localstorage to BBDD
+    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
 
- //Añadir Navegación al libro
+    setFavorites(prev => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(bookId)) {
+        newFavorites.delete(bookId);
+      } else {
+        newFavorites.add(bookId);
+      }
+      return newFavorites;
+    });
+  };
+
+ const handleBookClick = (bookId) => {
+    // Change localstorage to BBDD
+    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    navigate(`/book/${bookId}`);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -71,7 +97,7 @@ export default function HomePage() {
               >
                 <div className="relative aspect-[3/4] rounded-lg overflow-hidden max-h-[400px]">
                   <img
-                    src={book.cover}
+                    src={book.imagen}
                     alt={book.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition"
                   />
@@ -113,7 +139,7 @@ export default function HomePage() {
             <div key={book.id} className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="relative aspect-[3/4]">
                 <img
-                  src={book.cover}
+                  src={book.imagen}
                   alt={book.title}
                   className="w-full h-full object-cover"
                 />
