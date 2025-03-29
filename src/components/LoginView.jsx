@@ -4,24 +4,32 @@ import { Link, useNavigate } from 'react-router-dom';
 export default function LoginView() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Check for admin credentials
-    if (formData.email === 'admin' && formData.password === '123') {
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userRole', 'admin');
-      localStorage.setItem('username', 'admin');
-      navigate('/');
-      return;
-    }
 
-    // Show error for invalid credentials
-    alert('Invalid credentials');
+    try {
+      const response = await fetch(`http://localhost:8080/usuarios/${formData.username}`);
+      if (!response.ok) {
+        alert("No se encontró el usuario o hubo un error en el servidor.");
+        return;
+      }
+      
+      const usuario = await response.json();
+
+      if (usuario.password !== formData.password) {
+        alert('Credenciales inválidas');
+        return;
+      }
+
+      navigate('/');
+    } catch (error) {
+      console.error("Error en la petición:", error);
+      alert("Error al conectarse con el servidor");
+    }
   };
 
   return (
@@ -47,7 +55,7 @@ export default function LoginView() {
                   required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 />
               </div>
             </div>
