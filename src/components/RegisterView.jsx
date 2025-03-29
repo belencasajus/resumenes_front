@@ -10,15 +10,40 @@ export default function RegisterView() {
     confirmPassword: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
+      alert("Las contraseñas no coinciden!");
       return;
     }
-   
-    localStorage.setItem('isAuthenticated', 'true');
-    navigate('/');
+    
+    const usuarioData = {
+      username: formData.username,
+      email: formData.email,
+      password: formData.password
+    };
+
+    try {
+      const response = await fetch('http://localhost:8080/usuarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(usuarioData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+      
+      const data = await response.json();
+      console.log('Usuario registrado:', data);
+      
+      navigate('/');
+    } catch (error) {
+      console.error('Error al registrar el usuario:', error);
+      alert('Ocurrió un error al registrar el usuario. Intente nuevamente.');
+    }
   };
 
   return (
