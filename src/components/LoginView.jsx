@@ -10,9 +10,46 @@ export default function LoginView() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    try {
+      const response = await fetch('http://localhost:8080/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password
+        })
+      });
+  
+      if (!response.ok) {
+        if (response.status === 401) {
+          alert('Credenciales inválidas');
+        } else {
+          alert('Error al iniciar sesión');
+        }
+        return;
+      }
+  
+      const usuario = await response.json();
+      console.log("Usuario autenticado:", usuario);
+  
+      // Redirigir al home u otra página tras login exitoso
+      navigate('/');
+    } catch (error) {
+      console.error("Error en la petición:", error);
+      alert("Error al conectarse con el servidor");
+    }
+  };
+  /*
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     try {
       const response = await fetch(`http://localhost:8080/usuarios/${formData.username}`);
+      
       if (!response.ok) {
         alert("No se encontró el usuario o hubo un error en el servidor.");
         return;
@@ -31,7 +68,7 @@ export default function LoginView() {
       alert("Error al conectarse con el servidor");
     }
   };
-
+  */
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">

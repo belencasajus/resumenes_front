@@ -3,6 +3,7 @@ import HomePage from './components/HomePage';
 import SearchView from './components/SearchView';
 import LoginView from './components/LoginView';
 import RegisterView from './components/RegisterView';
+import BookSummary from './components/BookSummary';
 import './App.css';
 
 function PrivateRoute({ children }) {
@@ -18,6 +19,7 @@ function App() {
         <Route path="/login" element={<LoginView />} />
         <Route path="/register" element={<RegisterView />} />
         <Route path="/search" element={<SearchView />} />
+        <Route path="/book/:id" element={<BookSummary />} />
       </Routes>
     </Router>
   );

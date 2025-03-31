@@ -1,13 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserCircleIcon, StarIcon, LockClosedIcon, HeartIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
-import { books, categories } from '../data/mockData';
+import { categories } from '../data/mockData';
 
 export default function HomePage() {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('');
   const [favorites, setFavorites] = useState(new Set());
+  const [books, setBooks] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:8080/resumenes')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error en la respuesta del servidor');
+        }
+        return response.json();
+      })
+      .then(data => {
+        setBooks(data);
+      })
+      .catch(error => {
+        console.error('Error al obtener los resumenes:', error);
+      });
+  }, []);
 
   const filteredBooks = books.filter(book => {
     const matchesCategory = !selectedCategory || book.categories.includes(selectedCategory);
@@ -37,14 +54,21 @@ export default function HomePage() {
     });
   };
 
- const handleBookClick = (bookId) => {
-    // Change localstorage to BBDD
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    if (!isAuthenticated) {
+  const handleBookClick = async (bookId) => {
+    try {
+      const response = await fetch('http://localhost:8080/usuarios/me', {
+        credentials: 'include'
+      });
+  
+      if (response.ok) {
+        navigate(`/book/${bookId}`);
+      } else {
+        navigate('/login');
+      }
+    } catch (error) {
+      console.error('Error al verificar la autenticación:', error);
       navigate('/login');
-      return;
     }
-    navigate(`/book/${bookId}`);
   };
 
   return (
@@ -101,17 +125,17 @@ export default function HomePage() {
                     alt={book.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition"
                   />
-                  {book.isPremium && (
+                  {book.premium && (
                     <div className="absolute top-4 right-4 bg-black bg-opacity-50 p-2 rounded-full">
                       <LockClosedIcon className="h-5 w-5 text-white" />
                     </div>
                   )}
                 </div>
-                <h3 className="mt-2 text-lg font-semibold">{book.title}</h3>
-                <p className="text-gray-600">{book.author}</p>
+                <h3 className="mt-2 text-lg font-semibold">{book.titulo}</h3>
+                <p className="text-gray-600">{book.autor}</p>
                 <div className="flex items-center mt-1">
                   <StarIcon className="h-5 w-5 text-yellow-400" />
-                  <span className="ml-1">{book.averageRating}</span>
+                  <span className="ml-1">{book.valoracionMedia}</span>
                 </div>
               </div>
             ))}
@@ -140,10 +164,10 @@ export default function HomePage() {
               <div className="relative aspect-[3/4]">
                 <img
                   src={book.imagen}
-                  alt={book.title}
+                  alt={book.titulo}
                   className="w-full h-full object-cover"
                 />
-                {book.isPremium && (
+                {book.premium && (
                   <div className="absolute top-4 right-4 bg-black bg-opacity-50 p-2 rounded-full">
                     <LockClosedIcon className="h-5 w-5 text-white" />
                   </div>
@@ -167,11 +191,11 @@ export default function HomePage() {
                   className="cursor-pointer"
                   onClick={() => handleBookClick(book.id)}
                 >
-                  <h3 className="text-lg font-semibold mb-1">{book.title}</h3>
-                  <p className="text-gray-600 mb-2">{book.author}</p>
+                  <h3 className="text-lg font-semibold mb-1">{book.titulo}</h3>
+                  <p className="text-gray-600 mb-2">{book.autor}</p>
                   <div className="flex items-center">
                     <StarIcon className="h-5 w-5 text-yellow-400" />
-                    <span className="ml-1">{book.averageRating}</span>
+                    <span className="ml-1">{book.valoracionMedia}</span>
                   </div>
                 </div>
               </div>
