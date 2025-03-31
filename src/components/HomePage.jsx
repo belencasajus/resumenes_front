@@ -71,6 +71,23 @@ export default function HomePage() {
     }
   };
 
+  const handleProfileClick = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/usuarios/me', {
+        credentials: 'include'
+      });
+  
+      if (response.ok) {
+        navigate('/profile');
+      } else {
+        navigate('/login');
+      }
+    } catch (error) {
+      console.error('Error al verificar la autenticación:', error);
+      navigate('/login');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Bar */}
@@ -81,12 +98,12 @@ export default function HomePage() {
               BookSummaries
             </Link>
             <div className="flex items-center space-x-4">
-              <button className="flex items-center px-4 py-2 bg-yellow-400 text-gray-900 rounded-full font-medium hover:bg-yellow-500 transition">
-                Premium <StarIcon className="h-5 w-5 ml-2" />
+              <button className="flex items-center px-4 py-2 bg-yellow-400 text-gray-900 rounded-full font-medium hover:bg-yellow-500 transition" onClick={() => navigate('/subscription')}>
+                Premium <StarIcon className="h-5 w-5 ml-2"  /> 
               </button>
               <UserCircleIcon 
                 className="h-8 w-8 text-gray-600 cursor-pointer" 
-                onClick={() => navigate('/profile')}
+                onClick={() => handleProfileClick()}
               />
             </div>
           </div>

@@ -4,12 +4,8 @@ import SearchView from './components/SearchView';
 import LoginView from './components/LoginView';
 import RegisterView from './components/RegisterView';
 import BookSummary from './components/BookSummary';
+import SubscriptionView from './components/SubscriptionView';
 import './App.css';
-
-function PrivateRoute({ children }) {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-  return isAuthenticated ? children : <Navigate to="/login" />;
-}
 
 function App() {
   return (
@@ -20,6 +16,7 @@ function App() {
         <Route path="/register" element={<RegisterView />} />
         <Route path="/search" element={<SearchView />} />
         <Route path="/book/:id" element={<BookSummary />} />
+        <Route path="/subscription" element={<SubscriptionView />} />
       </Routes>
     </Router>
   );
