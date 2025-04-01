@@ -3,8 +3,6 @@ import { CheckCircleIcon } from '@heroicons/react/24/solid';
 
 export default function SubscriptionView() {
   const features = [
-    "Acceso ilimitados a todos los resúmenes",
-    "Versiones en audio de los resúmenes",
     "Contenido premium explusivo",
     "Recomendaciones de lectura personalizadas",
   ];
@@ -30,10 +28,11 @@ export default function SubscriptionView() {
           alert('Error al iniciar sesión');
         }
         return;
+      } else {
+        alert('Suscripción exitosa');
+        // Redirigir al home u otra página tras login exitoso
+        navigate('/');
       }
-  
-      // Redirigir al home u otra página tras login exitoso
-      navigate('/');
     } catch (error) {
       console.error("Error en la petición:", error);
       alert("Error al conectarse con el servidor");
