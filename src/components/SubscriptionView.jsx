@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
+import { useNavigate } from 'react-router-dom';
 
 export default function SubscriptionView() {
+  const navigate = useNavigate();
   const features = [
     "Contenido premium explusivo",
     "Recomendaciones de lectura personalizadas",
@@ -21,17 +23,7 @@ export default function SubscriptionView() {
         })
       });
   
-      if (!response.ok) {
-        if (response.status === 401) {
-          alert('Credenciales inválidas');
-        } else {
-          alert('Error al iniciar sesión');
-        }
-        return;
-      }
-  
-      const usuario = await response.json();
-      console.log("Usuario autenticado:", usuario);
+    
   
       // Redirigir al home u otra página tras login exitoso
       navigate('/');

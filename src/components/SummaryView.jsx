@@ -20,7 +20,6 @@ export default function SummaryView() {
           })
           .then(data => {
             setBook(data);
-            setReviews(data.valoraciones || [])
           })
           .catch(error => {
             console.error('Error al obtener los resumenes:', error);

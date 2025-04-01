@@ -16,10 +16,15 @@ export default function BookSummary() {
   useEffect(() => {
     fetch(`http://localhost:8080/resumenes/${id}`, {credentials: 'include'})
       .then(response => {
-        if (!response.ok) {
+        if (!response.ok) { 
+          if(response.status === 401) {
+            navigate('/subscription')
+            return;
+          }
           console.error('Error en la respuesta del servidor');
           navigate('/login')
           return;
+        
         }
         return response.json();
       })
