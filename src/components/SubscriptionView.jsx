@@ -17,8 +17,7 @@ export default function SubscriptionView() {
         },
         credentials: 'include',
         body: JSON.stringify({
-          username: formData.username,
-          password: formData.password
+          mensualidad: 5.99,
         })
       });
   
@@ -82,7 +81,7 @@ export default function SubscriptionView() {
             </ul>
 
             {/* Upgrade Button */}
-            <button className="mt-8 w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-indigo-700 hover:to-purple-700 transform transition-all duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-lg hover:shadow-xl" onClick={()=>handleSubmit}>
+            <button className="mt-8 w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-indigo-700 hover:to-purple-700 transform transition-all duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-lg hover:shadow-xl" onClick={handleSubmit}>
               Upgrade to Premium
             </button>
 

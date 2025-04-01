@@ -1,10 +1,12 @@
-import { useParams,useEffect, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
-
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function SummaryView() {
     const { id } = useParams();
     const [book, setBook] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch(`http://localhost:8080/resumenes/${id}`, {credentials: 'include'})
