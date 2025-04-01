@@ -5,6 +5,7 @@ import LoginView from './components/LoginView';
 import RegisterView from './components/RegisterView';
 import BookSummary from './components/BookSummary';
 import SubscriptionView from './components/SubscriptionView';
+import SummaryView from './components/SummaryView';
 import './App.css';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/search" element={<SearchView />} />
         <Route path="/book/:id" element={<BookSummary />} />
         <Route path="/subscription" element={<SubscriptionView />} />
+        <Route path="/summary/:id" element={<SummaryView />} />
       </Routes>
     </Router>
   );
