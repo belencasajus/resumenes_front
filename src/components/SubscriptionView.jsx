@@ -3,14 +3,10 @@ import { CheckCircleIcon } from '@heroicons/react/24/solid';
 
 export default function SubscriptionView() {
   const features = [
-    "Unlimited access to all book summaries",
-    "Audio versions of summaries",
-    "Exclusive premium content",
-    "Ad-free experience",
-    "Download summaries for offline reading",
-    "Priority access to new releases",
-    "Personalized reading recommendations",
-    "Advanced tracking and statistics"
+    "Acceso ilimitados a todos los resúmenes",
+    "Versiones en audio de los resúmenes",
+    "Contenido premium explusivo",
+    "Recomendaciones de lectura personalizadas",
   ];
   const handleSubmit = async (e) => {
     e.preventDefault();
