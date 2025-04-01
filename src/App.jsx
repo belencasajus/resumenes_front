@@ -18,7 +18,7 @@ function App() {
         <Route path="/search" element={<SearchView />} />
         <Route path="/book/:id" element={<BookSummary />} />
         <Route path="/subscription" element={<SubscriptionView />} />
-        <Route path="/summary/:id" element={<SummaryView />} />
+        <Route path="/summary/:id/summary" element={<SummaryView />} />
       </Routes>
     </Router>
   );
