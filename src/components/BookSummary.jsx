@@ -5,6 +5,7 @@ import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import StarRating from './StarRating';
 import ReviewForm from './ReviewForm';
 
+
 export default function BookSummary() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -34,7 +35,7 @@ export default function BookSummary() {
   if (!book) {
     return (
       <div className="max-w-6xl mx-auto p-6">
-        <h1 className="text-2xl font-bold">Book not found</h1>
+        <h1 className="text-2xl font-bold">No se ha encontrado el libro</h1>
       </div>
     );
   }
@@ -82,24 +83,26 @@ export default function BookSummary() {
           <div className="mt-8">
             <div className="mt-6 space-x-4">
               <Link
-                to={`/summary/${book.id}`}
+                to={`/summary/${book.id}/summary`}
                 className="inline-block bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700 transition"
               >
-                Read Full Summary
+                Leer resumen completo
               </Link>
+
               <button
                 onClick={() => setIsPlaying(!isPlaying)}
                 className="inline-block bg-gray-600 text-white px-6 py-3 rounded-md hover:bg-gray-700 transition"
               >
-                {isPlaying ? 'Pause Audio' : 'Listen to Summary'}
+                {isPlaying ? 'Pausar' : 'Reproducir'}
               </button>
             </div>
           </div>
 
+
           <div className="mt-12">
-            <h2 className="text-2xl font-semibold mb-6">Reviews</h2>
+            <h2 className="text-2xl font-semibold mb-6">Valoraciones</h2>
             <div className="mb-8">
-              <h3 className="text-xl font-semibold mb-4">Write a Review</h3>
+              <h3 className="text-xl font-semibold mb-4">Escribir una valoración</h3>
               <ReviewForm onSubmit={handleNewReview} />
             </div>
 

@@ -3,14 +3,8 @@ import { CheckCircleIcon } from '@heroicons/react/24/solid';
 
 export default function SubscriptionView() {
   const features = [
-    "Unlimited access to all book summaries",
-    "Audio versions of summaries",
-    "Exclusive premium content",
-    "Ad-free experience",
-    "Download summaries for offline reading",
-    "Priority access to new releases",
-    "Personalized reading recommendations",
-    "Advanced tracking and statistics"
+    "Contenido premium explusivo",
+    "Recomendaciones de lectura personalizadas",
   ];
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,9 +17,22 @@ export default function SubscriptionView() {
         },
         credentials: 'include',
         body: JSON.stringify({
-          mensualidad: 5.99
+          username: formData.username,
+          password: formData.password
         })
       });
+  
+      if (!response.ok) {
+        if (response.status === 401) {
+          alert('Credenciales inválidas');
+        } else {
+          alert('Error al iniciar sesión');
+        }
+        return;
+      }
+  
+      const usuario = await response.json();
+      console.log("Usuario autenticado:", usuario);
   
       // Redirigir al home u otra página tras login exitoso
       navigate('/');
@@ -40,16 +47,16 @@ export default function SubscriptionView() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-12">
           <Link to="/" className="text-indigo-600 hover:text-indigo-800 font-medium">
-            ← Back to Home
+            ← Home
           </Link>
         </div>
 
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Upgrade to Premium
+            Accede a Premium
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Unlock the full potential of your reading experience with our premium features
+            Desbloque todo el potencial de tu experiencia de lectura con nuestras características premium
           </p>
         </div>
 
@@ -57,9 +64,9 @@ export default function SubscriptionView() {
           {/* Premium Illustration */}
           <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-8 text-center">
             <div className="inline-block bg-white/10 rounded-2xl p-6 backdrop-blur-sm">
-              <span className="block text-white text-sm font-semibold mb-1">Monthly Premium</span>
+              <span className="block text-white text-sm font-semibold mb-1">Mensualidad</span>
               <span className="text-5xl font-bold text-white">5.99€</span>
-              <span className="block text-white/80 mt-1">per month</span>
+              <span className="block text-white/80 mt-1">por mes</span>
             </div>
           </div>
 
@@ -75,13 +82,13 @@ export default function SubscriptionView() {
             </ul>
 
             {/* Upgrade Button */}
-            <button className="mt-8 w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-indigo-700 hover:to-purple-700 transform transition-all duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-lg hover:shadow-xl" onClick={handleSubmit}>
+            <button className="mt-8 w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-indigo-700 hover:to-purple-700 transform transition-all duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-lg hover:shadow-xl" onClick={()=>handleSubmit}>
               Upgrade to Premium
             </button>
 
             {/* Money-back Guarantee */}
             <p className="text-center text-sm text-gray-500 mt-4">
-              30-day money-back guarantee • Cancel anytime
+               Cancela cuando quieras
             </p>
           </div>
         </div>
