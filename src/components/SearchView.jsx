@@ -27,7 +27,7 @@ export default function SearchView() {
         <div className="flex justify-center mb-12">
           <input
             type="text"
-            placeholder="Search books or authors..."
+            placeholder="Búsqueda de libros o autores..."
             className="w-full max-w-2xl px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-lg"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
