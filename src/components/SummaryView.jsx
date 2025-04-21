@@ -20,6 +20,17 @@ export default function SummaryView() {
           })
           .then(data => {
             setBook(data);
+
+            fetch(`http://localhost:8080/usuarios/leidos/${id}`, {
+              method: 'POST',
+              credentials: 'include'
+            }).then(res => {
+              if (!res.ok) {
+                console.error('No se pudo marcar como leído');
+              }
+            }).catch(err => {
+              console.error('Error al marcar como leído:', err);
+            });
           })
           .catch(error => {
             console.error('Error al obtener los resumenes:', error);

@@ -12,6 +12,8 @@ export default function BookSummary() {
   const [book, setBook] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [reviews, setReviews] = useState(book?.reviews || []);
+  const [usuario, setUsuario] = useState(null);
+  const [haLeido, setHaLeido] = useState(false);
   
   useEffect(() => {
     fetch(`http://localhost:8080/resumenes/${id}`, {credentials: 'include'})
@@ -30,6 +32,18 @@ export default function BookSummary() {
         const data = await response.json();
         setBook(data);
         setReviews(data.valoraciones || []);
+
+        const userRes = await fetch('http://localhost:8080/usuarios/me', {
+          credentials: 'include'
+        });
+  
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          setUsuario(userData);
+  
+          const idsLeidos = userData.resumenesLeidos.map(r => r.id);
+          setHaLeido(idsLeidos.includes(data.id));
+        }
       })
       .catch(error => {
         console.error('Error al obtener los resumenes:', error);
@@ -120,10 +134,19 @@ export default function BookSummary() {
 
           <div className="mt-12">
             <h2 className="text-2xl font-semibold mb-6">Valoraciones</h2>
-            <div className="mb-8">
+            {haLeido ? (
+
+              
+              <div className="mb-8">
               <h3 className="text-xl font-semibold mb-4">Escribir una valoración</h3>
               <ReviewForm onSubmit={handleNewReview} />
             </div>
+              ) : (
+                <p className="text-gray-500 mb-8">
+                Solo puedes valorar este resumen si lo has leído.
+              </p>
+              )
+            }
 
             <div className="space-y-6">
               {reviews.map((review) => (
