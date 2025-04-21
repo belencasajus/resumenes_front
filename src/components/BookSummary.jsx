@@ -15,22 +15,21 @@ export default function BookSummary() {
   
   useEffect(() => {
     fetch(`http://localhost:8080/resumenes/${id}`, {credentials: 'include'})
-      .then(response => {
+      .then(async response => {
         if (!response.ok) { 
           if(response.status === 401) {
+            navigate('/login')
+            return;
+          }
+          if(response.status === 403) {
             navigate('/subscription')
             return;
           }
-          console.error('Error en la respuesta del servidor');
-          navigate('/login')
-          return;
-        
+          throw new Error('Error al obtener el resumen del libro');
         }
-        return response.json();
-      })
-      .then(data => {
+        const data = await response.json();
         setBook(data);
-        setReviews(data.valoraciones || [])
+        setReviews(data.valoraciones || []);
       })
       .catch(error => {
         console.error('Error al obtener los resumenes:', error);
@@ -46,14 +45,29 @@ export default function BookSummary() {
   }
 
   const handleNewReview = async (review) => {
-    const newReview = {
-      id: Date.now(),
-      userId: 'currentUser',
-      username: 'Current User',
-      date: new Date().toISOString().split('T')[0],
-      ...review
-    };
-    setReviews([newReview, ...reviews]);
+    try{
+      const response = await fetch(`http://localhost:8080/valoraciones/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          rating: review.rating,
+          comentario: review.comment,
+        }),
+      });
+      if (!response.ok) {
+        const error = await response.text();
+        alert(`Error al enviar la valoración: ${error}`);
+        return;
+      }
+      const nuevaValoracion = await response.json();
+      setReviews([nuevaValoracion, ...reviews]);
+    } catch (error) {
+      console.error('Error al enviar la valoración:', error);
+      alert('Error al enviar la valoración.');
+    }
   };
 
   return (
