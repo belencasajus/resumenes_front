@@ -35,24 +35,38 @@ export default function HomePage() {
     .sort((a, b) => b.averageRating - a.averageRating)
     .slice(0, 3);
 
-  const toggleFavorite = (bookId) => {
-    // Change localstorage to BBDD
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-
-    setFavorites(prev => {
-      const newFavorites = new Set(prev);
-      if (newFavorites.has(bookId)) {
-        newFavorites.delete(bookId);
-      } else {
-        newFavorites.add(bookId);
+    const toggleFavorite = async (bookId) => {
+      try {
+        const isFav = favorites.has(bookId);
+        const method = isFav ? 'DELETE' : 'POST';
+    
+        const response = await fetch(`http://localhost:8080/usuarios/favoritos/${bookId}`, {
+          method,
+          credentials: 'include'
+        });
+    
+        if (response.ok) {
+          setFavorites(prev => {
+            const updated = new Set(prev);
+            if (isFav) {
+              updated.delete(bookId);
+            } else {
+              updated.add(bookId);
+            }
+            return updated;
+          });
+        } else if (response.status === 401 || response.status === 403) {
+          navigate('/login');
+        } else {
+          const msg = await response.text();
+          alert(`Error actualizando favoritos: ${msg}`);
+        }
+      } catch (error) {
+        console.error('Error actualizando favoritos:', error);
+        alert('No se pudo actualizar favoritos');
       }
-      return newFavorites;
-    });
-  };
+    };
+    
 
   const handleBookClick = async (bookId) => {
     try {
