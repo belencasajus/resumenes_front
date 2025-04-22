@@ -114,6 +114,29 @@ export default function ProfileView() {
     }
   };
 
+  const handleCancelarSuscripcion = async () => {
+    const confirmacion = window.confirm("¿Estás seguro de que quieres cancelar tu suscripción?");
+    if (!confirmacion) return;
+  
+    try {
+      const res = await fetch("http://localhost:8080/suscripciones", {
+        method: "DELETE",
+        credentials: "include"
+      });
+  
+      if (res.ok) {
+        alert("Suscripción cancelada correctamente");
+        window.location.reload();
+      } else {
+        const errorMsg = await res.text();
+        alert("Error: " + errorMsg);
+      }
+    } catch (err) {
+      console.error("Error cancelando suscripción:", err);
+      alert("Hubo un error al cancelar la suscripción.");
+    }
+  };
+
   if (!profile) return null;
 
   return (
@@ -168,10 +191,22 @@ export default function ProfileView() {
                 </div>
               </div>
 
-              {/* Premium Button */}
-              <button className="w-full bg-yellow-400 text-gray-900 px-4 py-2 rounded-md hover:bg-yellow-500 transition font-medium" onClick={() => navigate('/subscription')}>
+              {/* Premium / Cancelar Suscripción Button */}
+              {profile.rol === 'VISITANTE' ? (
+                <button
+                className="w-full bg-yellow-400 text-gray-900 px-4 py-2 rounded-md hover:bg-yellow-500 transition font-medium"
+                onClick={() => navigate('/subscription')}
+                >
                 Consigue Premium
-              </button>
+                </button>
+              ) : (
+                <button
+                  className="w-full bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+                  onClick={handleCancelarSuscripcion}
+                >
+                  Cancelar Suscripción
+                </button>
+              )}
 
               {/* Trophies Section */}
               <div className="bg-gray-50 p-4 rounded-lg">
