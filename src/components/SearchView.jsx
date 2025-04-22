@@ -1,14 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { books } from '../data/mockData';
 import { StarIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { useNavigate } from 'react-router-dom';
 
 export default function SearchView() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [books, setBooks] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch('http://localhost:8080/resumenes', { credentials: 'include' })
+      .then(res => {
+        if (!res.ok) throw new Error('Error al cargar los libros');
+        return res.json();
+      })
+      .then(data => setBooks(data))
+      .catch(err => console.error(err));
+  }, []);
 
   const filteredBooks = books.filter(book => {
-    const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         book.author.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = book.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         book.autor.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
@@ -20,7 +32,7 @@ export default function SearchView() {
             to="/"
             className="text-indigo-600 hover:text-indigo-800 font-medium"
           >
-            ← Back to Home
+            ← Volver al inicio 
           </Link>
         </div>
         
@@ -37,32 +49,33 @@ export default function SearchView() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredBooks.map(book => (
-            <div key={book.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div key={book.id} className="bg-white rounded-lg shadow-md overflow-hidden" onClick={()=> navigate(`/book/${book.id}`)}>
               <div className="relative aspect-[3/4]">
                 <img
-                  src={book.cover}
-                  alt={book.title}
+                  src={book.imagen}
+                  alt={book.titulo}
                   className="w-full h-full object-cover"
                 />
-                {book.isPremium && (
+                {book.premium && (
                   <div className="absolute top-4 right-4 bg-black bg-opacity-50 p-2 rounded-full">
                     <LockClosedIcon className="h-5 w-5 text-white" />
                   </div>
                 )}
               </div>
               <div className="p-4">
-                <Link to={`/book/${book.id}`} className="block">
-                  <h3 className="text-lg font-semibold mb-1">{book.title}</h3>
-                  <p className="text-gray-600 mb-2">{book.author}</p>
-                  <div className="flex items-center">
-                    <StarIcon className="h-5 w-5 text-yellow-400" />
-                    <span className="ml-1">{book.averageRating}</span>
-                  </div>
-                </Link>
+                <h3 className="text-lg font-semibold mb-1">{book.titulo}</h3>
+                <p className="text-gray-600 mb-2">{book.autor}</p>
+                <div className="flex items-center">
+                  <StarIcon className="h-5 w-5 text-yellow-400" />
+                  <span className="ml-1">{book.valoracionMedia.toFixed(1)}</span>
+                </div>
               </div>
             </div>
           ))}
         </div>
+        {filteredBooks.length === 0 && (
+          <p className="text-center text-gray-500 mt-12">No se encontraron resultados para tu búsqueda.</p>
+        )}
       </div>
     </div>
   );

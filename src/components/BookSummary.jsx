@@ -122,12 +122,12 @@ export default function BookSummary() {
                 Leer resumen completo
               </Link>
 
-              <button
-                onClick={() => setIsPlaying(!isPlaying)}
+              <Link
+                to={`/summary/${book.id}/audio`}
                 className="inline-block bg-gray-600 text-white px-6 py-3 rounded-md hover:bg-gray-700 transition"
               >
-                {isPlaying ? 'Pausar' : 'Reproducir'}
-              </button>
+                Escuchar resumen
+              </Link>
             </div>
           </div>
 

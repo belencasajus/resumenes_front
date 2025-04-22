@@ -6,6 +6,9 @@ import RegisterView from './components/RegisterView';
 import BookSummary from './components/BookSummary';
 import SubscriptionView from './components/SubscriptionView';
 import SummaryView from './components/SummaryView';
+import ProfileView from './components/ProfileView';
+import AudioPlayerView from './components/AudioPlayerView';
+import UploadSummaryView from './components/UploadSummaryView';
 import './App.css';
 
 function App() {
@@ -19,6 +22,9 @@ function App() {
         <Route path="/book/:id" element={<BookSummary />} />
         <Route path="/subscription" element={<SubscriptionView />} />
         <Route path="/summary/:id/summary" element={<SummaryView />} />
+        <Route path="/profile" element={<ProfileView/>}/>
+        <Route path="/summary/:id/audio" element={<AudioPlayerView />} />
+        <Route path="/upload" element={<UploadSummaryView/>} />
       </Routes>
     </Router>
   );

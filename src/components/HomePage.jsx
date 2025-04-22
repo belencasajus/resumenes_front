@@ -24,6 +24,25 @@ export default function HomePage() {
       .catch(error => {
         console.error('Error al obtener los resumenes:', error);
       });
+
+      fetch('http://localhost:8080/usuarios/favoritos', {
+        credentials: 'include'
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('No autenticado o error obteniendo favoritos');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Suponiendo que `data` es un array de resumenes
+          const favIds = data.map(book => book.id);
+          setFavorites(new Set(favIds));
+        })
+        .catch(err => {
+          console.warn('No se pudieron cargar favoritos:', err);
+          setFavorites(new Set()); // vacío si no autenticado
+        });
   }, []);
 
   const filteredBooks = books.filter(book => {
@@ -191,7 +210,7 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[800px] overflow-y-auto">
           {filteredBooks.map(book => (
-            <div key={book.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div key={book.id} className="bg-white rounded-lg shadow-md overflow-hidden" onClick={() => handleBookClick(book.id)}>
               <div className="relative aspect-[3/4]">
                 <img
                   src={book.imagen}
@@ -218,17 +237,12 @@ export default function HomePage() {
                 </button>
               </div>
               <div className="p-4">
-                <div 
-                  className="cursor-pointer"
-                  onClick={() => handleBookClick(book.id)}
-                >
                   <h3 className="text-lg font-semibold mb-1">{book.titulo}</h3>
                   <p className="text-gray-600 mb-2">{book.autor}</p>
                   <div className="flex items-center">
                     <StarIcon className="h-5 w-5 text-yellow-400" />
                     <span className="ml-1">{book.valoracionMedia}</span>
                   </div>
-                </div>
               </div>
             </div>
           ))}

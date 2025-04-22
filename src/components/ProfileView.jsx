@@ -1,20 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { UserCircleIcon, TrophyIcon } from '@heroicons/react/24/solid';
-import { books } from '../data/mockData';
+import { UserCircleIcon, TrophyIcon, PlusIcon } from '@heroicons/react/24/solid';
+
 
 export default function ProfileView() {
   const navigate = useNavigate();
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-  const username = localStorage.getItem('username') || 'User';
-  const userRole = localStorage.getItem('userRole') || 'user';
-  const [profileImage, setProfileImage] = useState(null);
-  const [favorites] = useState(books.slice(0, 2));
-  const [currentlyReading] = useState([
-    { ...books[0], progress: 75 },
-    { ...books[1], progress: 30 }
-  ]);
-
+  const [profile, setProfile] = useState(null);
+  const [favorites, setFavorites] = useState([]);
+  const [leidos, setLeidos] = useState([]);
+  const[profileImage, setProfileImage] = useState(null);
   const trophies = [
     {
       id: 1,
@@ -55,30 +49,72 @@ export default function ProfileView() {
   ];
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
-  }, [isAuthenticated, navigate]);
+    fetch('http://localhost:8080/usuarios/me', { credentials: 'include' })
+      .then(res => {
+        if (!res.ok) throw new Error('No autenticado');
+        return res.json();
+      })
+      .then(data => {
+        console.log('Usuario:', data);                // ✅ Esto aparece en la consola del navegador
+        console.log('Valoraciones:', data.valoraciones); // ✅ Aquí ves si se están recibiendo
+        setProfile(data);
+      })
+      .catch(() => navigate('/login'));
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('username');
-    navigate('/');
+    fetch('http://localhost:8080/usuarios/favoritos', { credentials: 'include' })
+      .then(res => res.json())
+      .then(setFavorites)
+      .catch(console.error);
+
+    fetch('http://localhost:8080/usuarios/leidos', { credentials: 'include' })
+      .then(res => res.json())
+      .then(setLeidos)
+      .catch(console.error);
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await fetch('http://localhost:8080/logout', {
+        method: 'POST',
+        credentials: 'include'  // importante para que se mande la cookie de sesión
+      });
+      navigate('/');
+    } catch (error) {
+      console.error('Error cerrando sesión:', error);
+      navigate('/');
+    }
   };
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
       reader.onloadend = () => {
-        setProfileImage(reader.result);
+        const base64Image = reader.result;
+        setProfileImage(base64Image);
+      
+        // Aquí haces el envío al backend
+        fetch('http://localhost:8080/usuarios/imagen', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({ imagen: base64Image })
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('No se pudo actualizar la imagen');
+            }
+          })
+          .catch(error => {
+            console.error('Error al guardar la imagen:', error);
+            alert('Hubo un error al guardar la imagen de perfil.');
+          });
       };
-      reader.readAsDataURL(file);
     }
   };
 
-  if (!isAuthenticated) return null;
+  if (!profile) return null;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -86,6 +122,13 @@ export default function ProfileView() {
         <div className="flex items-center justify-between mb-8">
           <Link to="/" className="text-indigo-600 hover:text-indigo-800 font-medium">
             ← Back to Home
+          </Link>
+          <Link
+            to="/upload"
+            className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+          >
+            <PlusIcon className="h-5 w-5 mr-2" />
+            Upload Summary
           </Link>
         </div>
 
@@ -117,24 +160,24 @@ export default function ProfileView() {
 
               {/* User Info */}
               <div className="space-y-3">
-                <h2 className="text-xl font-semibold">User Information</h2>
+                <h2 className="text-xl font-semibold text-center">User Information</h2>
                 <div className="space-y-2">
-                  <p className="text-gray-600">Username: {username}</p>
-                  <p className="text-gray-600">Role: {userRole}</p>
-                  <p className="text-gray-600">Email: admin@example.com</p>
+                  <p className="text-gray-600">Username: {profile.username}</p>
+                  <p className="text-gray-600">Email: {profile.email}</p>
+                  <p className="text-gray-600">Role: {profile.rol}</p>
                 </div>
               </div>
 
               {/* Premium Button */}
               <button className="w-full bg-yellow-400 text-gray-900 px-4 py-2 rounded-md hover:bg-yellow-500 transition font-medium">
-                Upgrade to Premium
+                Consigue Premium
               </button>
 
               {/* Trophies Section */}
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h2 className="text-xl font-semibold mb-4 flex items-center">
                   <TrophyIcon className="h-6 w-6 text-yellow-400 mr-2" />
-                  Achievements
+                  Logros
                 </h2>
                 <div className="space-y-4">
                   {trophies.map(trophy => (
@@ -167,31 +210,37 @@ export default function ProfileView() {
                 onClick={handleLogout}
                 className="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition"
               >
-                Logout
+                Cerrar sesión
               </button>
             </div>
 
-            {/* Right Section (3/5) */}
+            {/* Right Section */}
             <div className="w-3/5 space-y-8">
               {/* Reading Stats */}
               <div>
                 <h2 className="text-xl font-semibold mb-4">Reading Stats</h2>
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-2xl font-bold">12</p>
+                  <div className="bg-gray-50 p-4 rounded-lg text-center">
+                    <p className="text-2xl font-bold">{leidos.length}</p>
                     <p className="text-gray-600">Books Read</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-2xl font-bold">8</p>
+                  <div className="bg-gray-50 p-4 rounded-lg text-center">
+                    <p className="text-2xl font-bold">{profile.valoraciones?.length || 0}</p>
                     <p className="text-gray-600">Reviews</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-2xl font-bold">4.5</p>
+                  <div className="bg-gray-50 p-4 rounded-lg text-center">
+                    <p className="text-2xl font-bold">
+                      {profile.valoraciones && profile.valoraciones.length > 0
+                        ? (
+                            profile.valoraciones.reduce((acc, v) => acc + v.rating, 0) /
+                            profile.valoraciones.length
+                          ).toFixed(1)
+                        : '0.0'}
+                    </p>
                     <p className="text-gray-600">Avg Rating</p>
                   </div>
                 </div>
               </div>
-
               {/* Favorite Books */}
               <div>
                 <h2 className="text-xl font-semibold mb-4">Favorite Books</h2>
@@ -199,45 +248,38 @@ export default function ProfileView() {
                   {favorites.map(book => (
                     <div key={book.id} className="flex gap-4 items-center">
                       <img
-                        src={book.cover}
-                        alt={book.title}
+                        src={book.imagen}
+                        alt={book.titulo}
                         className="w-16 h-24 object-cover rounded"
                       />
                       <div>
-                        <h3 className="font-medium">{book.title}</h3>
-                        <p className="text-gray-600">{book.author}</p>
+                        <h3 className="font-medium">{book.titulo}</h3>
+                        <p className="text-gray-600">{book.autor}</p>
                       </div>
                     </div>
                   ))}
+                  {favorites.length === 0 && <p className="text-gray-500">No favorites yet.</p>}
                 </div>
               </div>
 
-              {/* Currently Reading */}
+              {/* Read Books */}
               <div>
-                <h2 className="text-xl font-semibold mb-4">Currently Reading</h2>
+                <h2 className="text-xl font-semibold mb-4">Read Books</h2>
                 <div className="space-y-4">
-                  {currentlyReading.map(book => (
+                  {leidos.map(book => (
                     <div key={book.id} className="flex gap-4 items-center">
                       <img
-                        src={book.cover}
-                        alt={book.title}
+                        src={book.imagen}
+                        alt={book.titulo}
                         className="w-16 h-24 object-cover rounded"
                       />
-                      <div className="flex-1">
-                        <h3 className="font-medium">{book.title}</h3>
-                        <p className="text-gray-600">{book.author}</p>
-                        <div className="mt-2">
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-indigo-600 h-2 rounded-full"
-                              style={{ width: `${book.progress}%` }}
-                            />
-                          </div>
-                          <p className="text-sm text-gray-600 mt-1">{book.progress}% complete</p>
-                        </div>
+                      <div>
+                        <h3 className="font-medium">{book.titulo}</h3>
+                        <p className="text-gray-600">{book.autor}</p>
                       </div>
                     </div>
                   ))}
+                  {leidos.length === 0 && <p className="text-gray-500">No books read yet.</p>}
                 </div>
               </div>
             </div>
