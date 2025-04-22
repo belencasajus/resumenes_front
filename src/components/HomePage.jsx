@@ -9,6 +9,8 @@ export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [favorites, setFavorites] = useState(new Set());
   const [books, setBooks] = useState([]);
+  const [filteredBooks, setFilteredBooks] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     fetch('http://localhost:8080/resumenes')
@@ -20,6 +22,7 @@ export default function HomePage() {
       })
       .then(data => {
         setBooks(data);
+        setFilteredBooks(data);    //por defecto, todo
       })
       .catch(error => {
         console.error('Error al obtener los resumenes:', error);
@@ -43,12 +46,44 @@ export default function HomePage() {
           console.warn('No se pudieron cargar favoritos:', err);
           setFavorites(new Set()); // vacío si no autenticado
         });
+      
+      fetch('http://localhost:8080/categorias')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error al obtener las categorías');
+          }
+          return response.json();
+        })
+        .then(data => {
+          setCategories(data);
+        })
+        .catch(error => {
+          console.error('Error al obtener las categorías:', error);
+        });
   }, []);
 
-  const filteredBooks = books.filter(book => {
-    const matchesCategory = !selectedCategory || book.categories.includes(selectedCategory);
-    return matchesCategory;
-  });
+  useEffect(() => {
+    if (!selectedCategory) {
+      setFilteredBooks(books);
+    } else {
+      fetch(`http://localhost:8080/resumenes?categoriaId=${selectedCategory}`)
+      .then(res =>{
+        if (!res.ok) {
+          throw new Error('Error al filtrar');
+        }
+        return res.text();
+      })
+      .then(text => {
+        if(!text) return [];
+        return JSON.parse(text);
+      })
+      .then(setFilteredBooks)
+      .catch(err => {
+        console.error('Error al filtrar libros:', err);
+      });
+    }
+  }, [selectedCategory, books]);
+
 
   const topRatedBooks = [...books]
     .sort((a, b) => b.averageRating - a.averageRating)
@@ -149,7 +184,7 @@ export default function HomePage() {
           <div className="w-full max-w-2xl">
             <input
               type="text"
-              placeholder="Search books or authors..."
+              placeholder="Busca Resúmenes o Autores..."
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-lg"
               onClick={() => navigate('/search')}
               readOnly
@@ -204,7 +239,7 @@ export default function HomePage() {
           >
             <option value="">Categorías</option>
             {categories.map(category => (
-              <option key={category} value={category}>{category}</option>
+              <option key={category.id} value={category.id}>{category.nombre}</option>
             ))}
           </select>
         </div>

@@ -47,7 +47,7 @@ export default function UploadSummaryView() {
           className="inline-flex items-center text-indigo-600 hover:text-indigo-800 mb-8"
         >
           <ArrowLeftIcon className="h-5 w-5 mr-2" />
-          Volver al perfil
+          Volver
         </Link>
 
         <div className="bg-white rounded-lg shadow-lg p-6">

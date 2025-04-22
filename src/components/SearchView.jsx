@@ -32,7 +32,7 @@ export default function SearchView() {
             to="/"
             className="text-indigo-600 hover:text-indigo-800 font-medium"
           >
-            ← Volver al inicio 
+            ← Volver
           </Link>
         </div>
         

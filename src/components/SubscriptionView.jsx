@@ -38,7 +38,7 @@ export default function SubscriptionView() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-12">
           <Link to="/" className="text-indigo-600 hover:text-indigo-800 font-medium">
-            ← Home
+            ← Volver
           </Link>
         </div>
 

@@ -121,14 +121,14 @@ export default function ProfileView() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
           <Link to="/" className="text-indigo-600 hover:text-indigo-800 font-medium">
-            ← Back to Home
+            ← Volver
           </Link>
           <Link
             to="/upload"
             className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
           >
             <PlusIcon className="h-5 w-5 mr-2" />
-            Upload Summary
+            Subir un Resumen
           </Link>
         </div>
 
@@ -160,16 +160,16 @@ export default function ProfileView() {
 
               {/* User Info */}
               <div className="space-y-3">
-                <h2 className="text-xl font-semibold text-center">User Information</h2>
+                <h2 className="text-xl font-semibold text-center">Información del Usuario</h2>
                 <div className="space-y-2">
                   <p className="text-gray-600">Username: {profile.username}</p>
                   <p className="text-gray-600">Email: {profile.email}</p>
-                  <p className="text-gray-600">Role: {profile.rol}</p>
+                  <p className="text-gray-600">Rol: {profile.rol}</p>
                 </div>
               </div>
 
               {/* Premium Button */}
-              <button className="w-full bg-yellow-400 text-gray-900 px-4 py-2 rounded-md hover:bg-yellow-500 transition font-medium">
+              <button className="w-full bg-yellow-400 text-gray-900 px-4 py-2 rounded-md hover:bg-yellow-500 transition font-medium" onClick={() => navigate('/subscription')}>
                 Consigue Premium
               </button>
 
@@ -218,15 +218,15 @@ export default function ProfileView() {
             <div className="w-3/5 space-y-8">
               {/* Reading Stats */}
               <div>
-                <h2 className="text-xl font-semibold mb-4">Reading Stats</h2>
+                <h2 className="text-xl font-semibold mb-4">Tus Estadísticas</h2>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="bg-gray-50 p-4 rounded-lg text-center">
                     <p className="text-2xl font-bold">{leidos.length}</p>
-                    <p className="text-gray-600">Books Read</p>
+                    <p className="text-gray-600">Resúmenes Leídos</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-lg text-center">
                     <p className="text-2xl font-bold">{profile.valoraciones?.length || 0}</p>
-                    <p className="text-gray-600">Reviews</p>
+                    <p className="text-gray-600">Valoraciones</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-lg text-center">
                     <p className="text-2xl font-bold">
@@ -237,13 +237,13 @@ export default function ProfileView() {
                           ).toFixed(1)
                         : '0.0'}
                     </p>
-                    <p className="text-gray-600">Avg Rating</p>
+                    <p className="text-gray-600">Valoración promedio</p>
                   </div>
                 </div>
               </div>
               {/* Favorite Books */}
               <div>
-                <h2 className="text-xl font-semibold mb-4">Favorite Books</h2>
+                <h2 className="text-xl font-semibold mb-4">Resúmenes Favoritos</h2>
                 <div className="space-y-4">
                   {favorites.map(book => (
                     <div key={book.id} className="flex gap-4 items-center">
@@ -258,13 +258,13 @@ export default function ProfileView() {
                       </div>
                     </div>
                   ))}
-                  {favorites.length === 0 && <p className="text-gray-500">No favorites yet.</p>}
+                  {favorites.length === 0 && <p className="text-gray-500">Todavía no tienes favoritos</p>}
                 </div>
               </div>
 
               {/* Read Books */}
               <div>
-                <h2 className="text-xl font-semibold mb-4">Read Books</h2>
+                <h2 className="text-xl font-semibold mb-4">Resúmenes Leídos</h2>
                 <div className="space-y-4">
                   {leidos.map(book => (
                     <div key={book.id} className="flex gap-4 items-center">

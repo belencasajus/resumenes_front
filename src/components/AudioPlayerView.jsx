@@ -86,7 +86,7 @@ export default function AudioPlayerView() {
           className="inline-flex items-center text-gray-300 hover:text-white mb-8"
         >
           <ArrowLeftIcon className="h-5 w-5 mr-2" />
-          Volver al resumen
+          Volver 
         </Link>
 
         <div className="text-center mb-12">

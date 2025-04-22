@@ -15,7 +15,7 @@ export default function ReviewForm({ onSubmit }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700">Rating</label>
+        <label className="block text-sm font-medium text-gray-700">Puntuación</label>
         <StarRating rating={rating} onRatingChange={setRating} />
       </div>
       <div>
