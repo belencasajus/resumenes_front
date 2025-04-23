@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { UserCircleIcon, TrophyIcon, PlusIcon } from '@heroicons/react/24/solid';
+import { useMemo } from 'react';
 
 
 export default function ProfileView() {
@@ -9,44 +10,46 @@ export default function ProfileView() {
   const [favorites, setFavorites] = useState([]);
   const [leidos, setLeidos] = useState([]);
   const[profileImage, setProfileImage] = useState(null);
-  const trophies = [
-    {
-      id: 1,
-      name: "Fantasy Enthusiast",
-      description: "Read 3 fantasy books",
-      icon: "🏰",
-      progress: 1,
-      total: 3,
-      unlocked: false
-    },
-    {
-      id: 2,
-      name: "Consistent Reader",
-      description: "Maintain a 7-day reading streak",
-      icon: "🔥",
-      progress: 5,
-      total: 7,
-      unlocked: false
-    },
-    {
-      id: 3,
-      name: "Review Master",
-      description: "Write 10 book reviews",
-      icon: "✍️",
-      progress: 8,
-      total: 10,
-      unlocked: false
-    },
-    {
-      id: 4,
-      name: "Genre Explorer",
-      description: "Read books from 5 different genres",
-      icon: "🌎",
-      progress: 3,
-      total: 5,
-      unlocked: false
-    }
-  ];
+  const trophies = useMemo(() => {
+    if(!profile) return [];
+
+    return [
+      {
+        id: 1,
+        name: "Primeros Pasos",
+        description: "Leer 2 libros",
+        icon: "📚",
+        progress: leidos.length,
+        total: 2,
+      },
+      {
+        id: 2,
+        name: "Crítico Literario",
+        description: "Valorar al menos 1 libro",
+        icon: "✍️",
+        progress: profile.valoraciones?.length || 0,
+        total: 1,
+      },
+      {
+        id: 3,
+        name: "Miembro Premium",
+        description: "Formar parte de la comunidad",
+        icon: "🌟",
+        progress: profile.rol === "LECTOR" ? 1 : 0,
+        total: 1,
+      },
+      {
+        id: 4,
+        name: "Contribuidor",
+        description: "Subir un resumen",
+        icon: "📤",
+        progress: profile.resumenesSubidos?.length || 0,
+        total: 1,
+      }
+    ];
+  }, [profile, leidos]);
+
+
 
   useEffect(() => {
     fetch('http://localhost:8080/usuarios/me', { credentials: 'include' })
@@ -55,8 +58,8 @@ export default function ProfileView() {
         return res.json();
       })
       .then(data => {
-        console.log('Usuario:', data);                // ✅ Esto aparece en la consola del navegador
-        console.log('Valoraciones:', data.valoraciones); // ✅ Aquí ves si se están recibiendo
+        console.log('Usuario:', data);                
+        console.log('Valoraciones:', data.valoraciones); 
         setProfile(data);
       })
       .catch(() => navigate('/login'));
@@ -226,13 +229,13 @@ export default function ProfileView() {
                           </div>
                         </div>
                         <span className="text-sm font-medium">
-                          {trophy.progress}/{trophy.total}
+                          {Math.min(trophy.progress, trophy.total)}/{trophy.total}
                         </span>
                       </div>
                       <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                         <div
                           className="bg-yellow-400 h-2 rounded-full transition-all"
-                          style={{ width: `${(trophy.progress / trophy.total) * 100}%` }}
+                          style={{ width: `${Math.min((trophy.progress / trophy.total) * 100, 100)}%` }}
                         />
                       </div>
                     </div>
