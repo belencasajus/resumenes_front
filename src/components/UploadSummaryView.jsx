@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeftIcon, CloudArrowUpIcon } from '@heroicons/react/24/solid';
 
@@ -15,6 +15,25 @@ export default function UploadSummaryView() {
 
   const [previewImage, setPreviewImage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [availableCategories, setAvailableCategories] = useState([]);
+  const [newCategory, setNewCategory] = useState('');
+
+
+  useEffect(() => {
+    fetch('http://localhost:8080/categorias')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error al obtener las categorías');
+      }
+      return response.json();
+    })
+    .then(data => {
+      setAvailableCategories(data);
+    })
+    .catch(error => {
+      console.error('Error al obtener las categorías:', error);
+    });
+  }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -25,6 +44,36 @@ export default function UploadSummaryView() {
         setPreviewImage(reader.result);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAddCategory = async () =>{
+    if(!newCategory.trim()) return;
+
+    try {
+      const res = await fetch('http://localhost:8080/categorias', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({ nombre: newCategory })
+      });
+
+      if(res.ok){
+        const nueva = await res.json();
+        setAvailableCategories(prev => [...prev, nueva]);
+        setFormData(prev => ({ 
+          ...prev, 
+          categories: [...prev.categories, String(nueva.id)] 
+        }));
+        setNewCategory('');
+      } else {
+        const error = await res.json();
+        alert('Error al crear la categoría:', error);
+      }
+    } catch (error) {
+      console.error('Error al crear la categoría:', error);
     }
   };
 
@@ -108,17 +157,30 @@ export default function UploadSummaryView() {
                   categories: Array.from(e.target.selectedOptions, option => option.value)
                 })}
               >
-                <option value="Personal Development">Personal Development</option>
-                <option value="Business">Business</option>
-                <option value="Psychology">Psychology</option>
-                <option value="Finance">Finance</option>
-                <option value="Leadership">Leadership</option>
-                <option value="Productivity">Productivity</option>
-                <option value="Fantasy">Fantasy</option>
-                <option value="Science Fiction">Science Fiction</option>
-                <option value="Mystery">Mystery</option>
+                {availableCategories.map(category => (
+                  <option key={category.id} value={category.id}> {category.nombre} </option>
+                ))}
               </select>
-              <p className="text-sm text-gray-500 mt-1">Mantén Ctrl/Cmd para seleccionar múltiples categorías</p>
+              {/* Añadir nueva categoría */}
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Añadir nueva categoría</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Nombre de la nueva categoría"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddCategory}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-green-700 transition"
+                  >
+                    Añadir
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
