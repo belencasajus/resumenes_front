@@ -8,7 +8,6 @@ export default function ProfileView() {
   const [profile, setProfile] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [leidos, setLeidos] = useState([]);
-  const[profileImage, setProfileImage] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState({
   username: '',
@@ -111,7 +110,6 @@ export default function ProfileView() {
     if (response.ok) {
       const updatedProfile = await response.json();
       setProfile(updatedProfile);
-      setProfileImage(`http://localhost:8080${updatedProfile.imagen}`);
       alert("Imagen de perfil actualizada con éxito");
     } else {
       const errorText = await response.text();
@@ -194,27 +192,28 @@ export default function ProfileView() {
           <div className="flex gap-8">
             {/* Left Section (2/5) */}
             <div className="w-2/5 space-y-6">
-              {/* Profile Image */}
-              <div className="relative w-48 h-48 mx-auto">
-                <label htmlFor="profile-image" className="cursor-pointer block">
-                  {profileImage ? (
-                    <img
-                      src={`http://localhost:8080${profile.imagen}`}
-                      alt="Profile"
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  ) : (
-                    <UserCircleIcon className="w-full h-full text-gray-300" />
-                  )}
-                  <input
-                    type="file"
-                    id="profile-image"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleImageUpload}
+            {/* Profile Image */}
+            <div className="relative w-48 h-48 mx-auto rounded-full overflow-hidden shadow">
+              <label htmlFor="profile-image" className="cursor-pointer block w-full h-full">
+                {profile.imagen ? (
+                  <img
+                    src={`http://localhost:8080${profile.imagen}`}
+                    alt="Perfil"
+                    className="w-full h-full object-cover object-center"
                   />
-                </label>
-              </div>
+                ) : (
+                  <UserCircleIcon className="w-full h-full text-gray-300" />
+                )}
+                <input
+                  id="profile-image"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+              </label>
+            </div>
+
 
               {/* User Info */}
               <div className="space-y-3">
