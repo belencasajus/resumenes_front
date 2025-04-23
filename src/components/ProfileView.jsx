@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { UserCircleIcon, TrophyIcon, PlusIcon } from '@heroicons/react/24/solid';
-import { useMemo } from 'react';
 
 
 export default function ProfileView() {
@@ -125,20 +124,19 @@ export default function ProfileView() {
   };
   const handleSaveProfileChanges = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/usuarios/${profile.username}`, {
+      const formData = new FormData();
+      formData.append("username", editedProfile.username || profile.username);
+      formData.append("email", editedProfile.email || profile.email);
+
+      const res = await fetch(`http://localhost:8080/usuarios/perfil`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         credentials: 'include',
-        body: JSON.stringify({
-          username: editedProfile.username,
-          email: editedProfile.email
-        })
+        body: formData
       });
   
       if (res.ok) {
         alert("Perfil actualizado correctamente");
+        setProfile(await res.json());
         setIsEditing(false);
         window.location.reload(); // o puedes volver a hacer fetch del perfil
       } else {

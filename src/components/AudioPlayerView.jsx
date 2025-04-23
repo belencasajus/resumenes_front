@@ -13,6 +13,19 @@ export default function AudioPlayerView() {
   const audioRef = useRef(null);
 
   useEffect(() => {
+    fetch(`http://localhost:8080/usuarios/leidos/${id}`, {
+      method: 'POST',
+      credentials: 'include'
+    }).then(res => {
+      if (!res.ok) {
+        console.error('No se pudo marcar como leído');
+      }
+    }).catch(err => {
+      console.error('Error al marcar como leído:', err);
+    });
+  }, []);
+
+  useEffect(() => {
     fetch(`http://localhost:8080/resumenes/${id}`, { credentials: 'include' })
       .then(r => r.json()).then(setBook).catch(console.error);
   }, [id]);
