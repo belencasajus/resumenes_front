@@ -52,7 +52,7 @@ export default function SearchView() {
             <div key={book.id} className="bg-white rounded-lg shadow-md overflow-hidden" onClick={()=> navigate(`/book/${book.id}`)}>
               <div className="relative aspect-[3/4]">
                 <img
-                  src={book.imagen}
+                  src={`http://localhost:8080${book.imagen}`}
                   alt={book.titulo}
                   className="w-full h-full object-cover"
                 />

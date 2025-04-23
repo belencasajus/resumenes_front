@@ -97,7 +97,7 @@ export default function BookSummary() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="md:sticky md:top-6 self-start">
           <img
-            src={book.imagen}
+            src={`http://localhost:8080${book.imagen}`}
             alt={book.titulo}
             className="w-full h-[600px] object-cover rounded-lg shadow-2xl"
           />

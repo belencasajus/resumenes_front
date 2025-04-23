@@ -286,7 +286,7 @@ export default function ProfileView() {
                   {favorites.map(book => (
                     <div key={book.id} className="flex gap-4 items-center">
                       <img
-                        src={book.imagen}
+                        src={`http://localhost:8080${book.imagen}`}
                         alt={book.titulo}
                         className="w-16 h-24 object-cover rounded"
                       />
@@ -307,7 +307,7 @@ export default function ProfileView() {
                   {leidos.map(book => (
                     <div key={book.id} className="flex gap-4 items-center">
                       <img
-                        src={book.imagen}
+                        src={`http://localhost:8080${book.imagen}`}
                         alt={book.titulo}
                         className="w-16 h-24 object-cover rounded"
                       />

@@ -206,7 +206,7 @@ export default function HomePage() {
               >
                 <div className="relative aspect-[3/4] rounded-lg overflow-hidden max-h-[400px]">
                   <img
-                    src={book.imagen}
+                    src={`http://localhost:8080${book.imagen}`}
                     alt={book.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition"
                   />
@@ -248,7 +248,7 @@ export default function HomePage() {
             <div key={book.id} className="bg-white rounded-lg shadow-md overflow-hidden" onClick={() => handleBookClick(book.id)}>
               <div className="relative aspect-[3/4]">
                 <img
-                  src={book.imagen}
+                  src={`http://localhost:8080${book.imagen}`}
                   alt={book.titulo}
                   className="w-full h-full object-cover"
                 />

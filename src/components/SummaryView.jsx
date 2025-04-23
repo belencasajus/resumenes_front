@@ -57,7 +57,7 @@ export default function SummaryView() {
           <div className="bg-white rounded-lg shadow-lg p-8">
             <div className="flex items-center mb-8">
               <img
-                src={book.imagen}
+                src={`http://localhost:8080${book.imagen}`}
                 alt={book.titulo}
                 className="w-24 h-24 object-cover rounded-lg shadow-md"
               />

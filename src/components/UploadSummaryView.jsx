@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeftIcon, CloudArrowUpIcon } from '@heroicons/react/24/solid';
+import { useNavigate } from 'react-router-dom';  
 
 export default function UploadSummaryView() {
+  const navigate = useNavigate(); 
   const [formData, setFormData] = useState({
     title: '',
     author: '',
@@ -80,12 +82,38 @@ export default function UploadSummaryView() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate upload delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    // Reset form or redirect
+    /* 1. Construir el objeto Resumen que Spring mapeará */
+    const resumen = {
+      titulo:  formData.title,
+      autor:   formData.author,
+      texto:   formData.summary,
+      premium: false,
+      categoria: formData.categories.length
+                 ? { id: Number(formData.categories[0]) }  // admite null
+                 : null
+    };
+
+    /* 2. Multipart/form-data */
+    const fd = new FormData();
+    fd.append('data', new Blob([JSON.stringify(resumen)], { type: 'application/json' }));
+    if (formData.coverImage) fd.append('cover', formData.coverImage);
+    if (formData.audioFile)  fd.append('audio', formData.audioFile);
+
+    try {
+      const res = await fetch('http://localhost:8080/resumenes', {
+        method: 'POST',
+        body: fd,
+        credentials: 'include'
+      });
+      if (!res.ok) throw new Error('Error al subir el resumen');
+      await res.json();            
+      navigate('/');  
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -217,7 +245,7 @@ export default function UploadSummaryView() {
                 </label>
                 <input
                   type="file"
-                  accept="audio/*"
+                  accept="audio/mpeg,audio/*"
                   onChange={(e) => setFormData({ ...formData, audioFile: e.target.files[0] })}
                   className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                 />
