@@ -47,7 +47,7 @@ export default function ProfileView() {
         description: "Subir un resumen",
         icon: "📤",
         progress: profile.resumenesSubidos?.length || 0,
-        total: 1,
+        total: 4,
       }
     ];
   }, [profile, leidos]);
