@@ -10,6 +10,11 @@ export default function ProfileView() {
   const [favorites, setFavorites] = useState([]);
   const [leidos, setLeidos] = useState([]);
   const[profileImage, setProfileImage] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedProfile, setEditedProfile] = useState({
+  username: '',
+  email: ''
+});
   const trophies = useMemo(() => {
     if(!profile) return [];
 
@@ -88,35 +93,64 @@ export default function ProfileView() {
     }
   };
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = async (event) => {
     const file = event.target.files[0];
-    if (file) {
-      reader.onloadend = () => {
-        const base64Image = reader.result;
-        setProfileImage(base64Image);
-      
-        // Aquí haces el envío al backend
-        fetch('http://localhost:8080/usuarios/imagen', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include',
-          body: JSON.stringify({ imagen: base64Image })
+  if (!file || !profile) return;
+
+  const formData = new FormData();
+  formData.append("username", profile.username);
+  formData.append("email", profile.email);
+  formData.append("imagen", file);
+
+  try {
+    const response = await fetch("http://localhost:8080/usuarios/perfil", {
+      method: "PUT",
+      credentials: "include",
+      body: formData,
+    });
+
+    if (response.ok) {
+      const updatedProfile = await response.json();
+      setProfile(updatedProfile);
+      setProfileImage(`http://localhost:8080${updatedProfile.imagen}`);
+      alert("Imagen de perfil actualizada con éxito");
+    } else {
+      const errorText = await response.text();
+      alert("Error al actualizar la imagen: " + errorText);
+    }
+  } catch (error) {
+    console.error("Error al enviar la imagen:", error);
+    alert("Hubo un error al subir la imagen de perfil.");
+  }
+  };
+  const handleSaveProfileChanges = async () => {
+    try {
+      const res = await fetch(`http://localhost:8080/usuarios/${profile.username}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          username: editedProfile.username,
+          email: editedProfile.email
         })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('No se pudo actualizar la imagen');
-            }
-          })
-          .catch(error => {
-            console.error('Error al guardar la imagen:', error);
-            alert('Hubo un error al guardar la imagen de perfil.');
-          });
-      };
+      });
+  
+      if (res.ok) {
+        alert("Perfil actualizado correctamente");
+        setIsEditing(false);
+        window.location.reload(); // o puedes volver a hacer fetch del perfil
+      } else {
+        const msg = await res.text();
+        alert("Error al actualizar: " + msg);
+      }
+    } catch (err) {
+      console.error('Error actualizando perfil:', err);
+      alert('Error al actualizar el perfil.');
     }
   };
-
+  
   const handleCancelarSuscripcion = async () => {
     const confirmacion = window.confirm("¿Estás seguro de que quieres cancelar tu suscripción?");
     if (!confirmacion) return;
@@ -167,7 +201,7 @@ export default function ProfileView() {
                 <label htmlFor="profile-image" className="cursor-pointer block">
                   {profileImage ? (
                     <img
-                      src={profileImage}
+                      src={`http://localhost:8080${profile.imagen}`}
                       alt="Profile"
                       className="w-full h-full rounded-full object-cover"
                     />
@@ -186,13 +220,50 @@ export default function ProfileView() {
 
               {/* User Info */}
               <div className="space-y-3">
-                <h2 className="text-xl font-semibold text-center">Información del Usuario</h2>
-                <div className="space-y-2">
-                  <p className="text-gray-600">Username: {profile.username}</p>
-                  <p className="text-gray-600">Email: {profile.email}</p>
-                  <p className="text-gray-600">Rol: {profile.rol}</p>
-                </div>
-              </div>
+  <h2 className="text-xl font-semibold text-center">Información del Usuario</h2>
+
+  {isEditing ? (
+    <div className="space-y-3">
+      <input
+        type="text"
+        placeholder="Nuevo username"
+        className="w-full px-3 py-2 border rounded-md"
+        value={editedProfile.username}
+        onChange={(e) => setEditedProfile(prev => ({ ...prev, username: e.target.value }))}
+      />
+      <input
+        type="email"
+        placeholder="Nuevo email"
+        className="w-full px-3 py-2 border rounded-md"
+        value={editedProfile.email}
+        onChange={(e) => setEditedProfile(prev => ({ ...prev, email: e.target.value }))}
+      />
+      <button
+        className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
+        onClick={handleSaveProfileChanges}
+      >
+        Guardar cambios
+      </button>
+    </div>
+  ) : (
+    <div className="space-y-2">
+      <p className="text-gray-600">Username: {profile.username}</p>
+      <p className="text-gray-600">Email: {profile.email}</p>
+      <p className="text-gray-600">Rol: {profile.rol}</p>
+
+      <button
+        onClick={() => {
+          setIsEditing(true);
+          setEditedProfile({ username: profile.username, email: profile.email });
+        }}
+        className="w-full bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition"
+      >
+        Editar perfil
+      </button>
+    </div>
+  )}
+</div>
+
 
               {/* Premium / Cancelar Suscripción Button */}
               {profile.rol === 'VISITANTE' ? (
