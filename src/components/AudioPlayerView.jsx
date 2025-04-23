@@ -21,7 +21,7 @@ export default function AudioPlayerView() {
     if (!book) return;
     if (audioRef.current) audioRef.current.pause();     // limpiar anterior
 
-    const audio = new Audio(`http://localhost:8080/audio/${book.audio}`);
+    const audio = new Audio(`http://localhost:8080${book.audio}`);
     audioRef.current = audio;
 
     const fmt = s => {
