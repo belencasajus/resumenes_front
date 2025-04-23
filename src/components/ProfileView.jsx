@@ -117,9 +117,9 @@ export default function ProfileView() {
   const handleCancelarSuscripcion = async () => {
     const confirmacion = window.confirm("¿Estás seguro de que quieres cancelar tu suscripción?");
     if (!confirmacion) return;
-  
+
     try {
-      const res = await fetch("http://localhost:8080/suscripciones", {
+      const res = await fetch("http://localhost:8080/usuarios/suscripcion", {
         method: "DELETE",
         credentials: "include"
       });
