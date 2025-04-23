@@ -124,6 +124,20 @@ export default function RegisterView() {
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 />
               </div>
+              <div className="flex items-start mt-4">
+                <input
+                  type="checkbox"
+                  id="privacyPolicy"
+                  required
+                  className="mt-1 mr-2"
+                />
+                <label htmlFor="privacyPolicy" className="text-sm text-gray-700">
+                  He leído y acepto la <a href="/politica-privacidad" className="text-indigo-600 underline" target="_blank" rel="noopener noreferrer">
+                    política de privacidad
+                  </a>.
+                </label>
+              </div>
+
             </div>
 
             <div>

@@ -9,6 +9,7 @@ import SummaryView from './components/SummaryView';
 import ProfileView from './components/ProfileView';
 import AudioPlayerView from './components/AudioPlayerView';
 import UploadSummaryView from './components/UploadSummaryView';
+import PrivacyPolicyView from './components/PrivacyPolicyView';
 import './App.css';
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path="/profile" element={<ProfileView/>}/>
         <Route path="/summary/:id/audio" element={<AudioPlayerView />} />
         <Route path="/upload" element={<UploadSummaryView/>} />
+        <Route path="/politica-privacidad" element={<PrivacyPolicyView/>} />
       </Routes>
     </Router>
   );
