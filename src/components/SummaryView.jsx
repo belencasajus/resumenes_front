@@ -63,7 +63,7 @@ export default function SummaryView() {
               />
               <div className="ml-6">
                 <h1 className="text-3xl font-bold">{book.titulo}</h1>
-                <p className="text-xl text-gray-600">by {book.autor}</p>
+                <p className="text-xl text-gray-600">por {book.autor}</p>
               </div>
             </div>
     

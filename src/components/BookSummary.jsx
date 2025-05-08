@@ -104,7 +104,7 @@ export default function BookSummary() {
         </div>
         <div>
           <h1 className="text-4xl font-bold">{book.titulo}</h1>
-          <p className="text-2xl text-gray-600 mt-2">by {book.autor}</p>
+          <p className="text-2xl text-gray-600 mt-2">por {book.autor}</p>
           
           <div className="flex items-center mt-6">
             <StarRating rating={book.valoracionMedia} readonly />

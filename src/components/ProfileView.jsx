@@ -31,7 +31,7 @@ export default function ProfileView() {
         description: "Valorar al menos 1 libro",
         icon: "✍️",
         progress: profile.valoraciones?.length || 0,
-        total: 1,
+        total: 2,
       },
       {
         id: 3,
@@ -223,7 +223,7 @@ export default function ProfileView() {
     <div className="space-y-3">
       <input
         type="text"
-        placeholder="Nuevo username"
+        placeholder="Nuevo Usuario"
         className="w-full px-3 py-2 border rounded-md"
         value={editedProfile.username}
         onChange={(e) => setEditedProfile(prev => ({ ...prev, username: e.target.value }))}
@@ -244,7 +244,7 @@ export default function ProfileView() {
     </div>
   ) : (
     <div className="space-y-2">
-      <p className="text-gray-600">Username: {profile.username}</p>
+      <p className="text-gray-600">Usuario: {profile.username}</p>
       <p className="text-gray-600">Email: {profile.email}</p>
       <p className="text-gray-600">Rol: {profile.rol}</p>
 
