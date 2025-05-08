@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserCircleIcon, StarIcon, LockClosedIcon, HeartIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
-import { categories } from '../data/mockData';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -11,6 +10,7 @@ export default function HomePage() {
   const [books, setBooks] = useState([]);
   const [filteredBooks, setFilteredBooks] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     fetch('http://localhost:8080/resumenes')
@@ -60,6 +60,14 @@ export default function HomePage() {
         .catch(error => {
           console.error('Error al obtener las categorías:', error);
         });
+      
+        fetch('http://localhost:8080/usuarios/me', { credentials: 'include' })
+        .then(res => {
+          if (res.ok) return res.json();
+          throw new Error('No autenticado');
+        })
+        .then(setUser)
+        .catch(() => setUser(null));
   }, []);
 
   useEffect(() => {
@@ -166,9 +174,21 @@ export default function HomePage() {
               Resumenes
             </Link>
             <div className="flex items-center space-x-4">
-              <button className="flex items-center px-4 py-2 bg-yellow-400 text-gray-900 rounded-full font-medium hover:bg-yellow-500 transition" onClick={() => navigate('/subscription')}>
-                Premium <StarIcon className="h-5 w-5 ml-2"  /> 
-              </button>
+            {user && user.rol == "VISITANTE" && (
+                <button
+                  className="flex items-center px-4 py-2 bg-yellow-400 text-gray-900 rounded-full font-medium hover:bg-yellow-500 transition"
+                  onClick={() => navigate('/subscription')}
+                >
+                  Premium <StarIcon className="h-5 w-5 ml-2" />
+                </button>
+              )}
+              {user && user.rol == "LECTOR" && (
+                <button
+                  className="flex items-center px-4 py-2 bg-gray-300 text-gray-600 rounded-full font-medium cursor-default select-none"
+                >
+                  Suscripción Premium <StarIcon className="h-5 w-5 ml-2" />
+                </button>
+              )}
               <UserCircleIcon 
                 className="h-8 w-8 text-gray-600 cursor-pointer" 
                 onClick={() => handleProfileClick()}
@@ -196,7 +216,7 @@ export default function HomePage() {
       {/* Top Rated Carousel */}
       <div className="bg-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold mb-6">Libros más destacados</h2>
+          <h2 className="text-2xl font-bold mb-6">Libros destacados</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {topRatedBooks.map(book => (
               <div 
